@@ -21,10 +21,17 @@ if (fileSystem.existsSync(secretsPath)) {
 }
 
 var options = {
-  //optimization: {minimize: false},
+  //optimization: {minimize: true},
   mode: env.NODE_ENV,
   entry: {
+    content: "./src/js/content.js"
+  },
+  chromeExtensionBoilerplate: {
+    notHotReload: ["content"]
+  },
+  entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
+    confirm: path.join(__dirname, "src", "js", "confirm.js"),
     app: path.join(__dirname, "src", "js", "app.js"),
     options: path.join(__dirname, "src", "js", "options.js"),
     background: path.join(__dirname, "src", "js", "background.js"),
@@ -87,7 +94,7 @@ var options = {
   },
   plugins: [
     // clean the build folder
-    //new CleanWebpackPlugin(["build"]),
+    new CleanWebpackPlugin(["build"]),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
@@ -122,6 +129,11 @@ var options = {
       template: path.join(__dirname, "src", "background.html"),
       filename: "background.html",
       chunks: ["background"]
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src", "confirm.html"),
+      filename: "confirm.html",
+      chunks: ["confirm"]
     }),
     new WriteFilePlugin(),
     new MonacoWebpackPlugin({

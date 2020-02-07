@@ -181,3 +181,9 @@ export const balanceTotal = derived(CoinStore, ($CoinStore) => {
     })
     return total;
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'coinStoreLocked') {
+        sendResponse({locked: get(CoinStore.lockedStore)})
+	}
+})
