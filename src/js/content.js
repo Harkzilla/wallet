@@ -1,46 +1,29 @@
-document.addEventListener('getLamdenWalletStatus', () => getStatus());
+document.addEventListener('getLamdenWalletInfo', () => getWalletInfo());
 document.addEventListener('signTx', (event) => {
-    let signData = event.detail;
-    signData.type = 'sign';
+    signData = {type: 'signTx', data: event.detail};
     chrome.runtime.sendMessage(signData, (response) => {
-        if (response) {
-            if (response.error) {
-                window.postMessage(response, '*');
-            }
-        }
+        document.dispatchEvent(new CustomEvent('txStatus', {detail: response}));
     });
 });
 
-function getStatus(){
-    let status = {installed: undefined, setup: undefined, locked: undefined} 
-    chrome.runtime.sendMessage({type: 'checkLamdenWalletInstalled'}, (installedResponse) => {
+function getWalletInfo(){
+    chrome.runtime.sendMessage({type: 'getWalletInfo'}, (response) => {
         if(!chrome.runtime.lastError){
-            let status = {
-                installed: installedResponse.installed,
-                setup: installedResponse.setup, 
-                locked: undefined
-            } 
-            if (installedResponse.installed && installedResponse.setup){
-                chrome.runtime.sendMessage({type: 'coinStoreLocked'}, (lockedResponse) => {
-                    if(!chrome.runtime.lastError){
-                        try{
-                            status.locked = lockedResponse.locked;
-                        } catch {
-                            status.locked = true;
-                        }
-                    }else{
-                        status.locked = true;
-                    }
-                    document.dispatchEvent(new CustomEvent('lamdenWalletStatus', {detail: status}));
-                })
-            }
+            document.dispatchEvent(new CustomEvent('lamdenWalletInfo', {detail: response}));
         }
-        document.dispatchEvent(new CustomEvent('lamdenWalletStatus', {detail: status}));
     });
 }
 
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.type === 'signedTx') {
-        window.postMessage(message, '*');
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "txStatus"){
+        let detail = {
+            status: message.status,
+            data: message.data
+        }
+        document.dispatchEvent(new CustomEvent('txStatus', {detail}));
+    }
+
+    if (message.type === "sendWalletInfo"){
+        getWalletInfo();
     }
 });

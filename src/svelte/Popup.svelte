@@ -3,7 +3,9 @@
 
 	onMount(() => {
 		chrome.runtime.sendMessage({type:'expand'}, () => {
-			console.log('error')
+			if(chrome.runtime.lastError){
+				console.log(chrome.runtime.lastError)
+			}
         })
 	});
 </script>

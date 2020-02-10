@@ -2,7 +2,8 @@ import { writable, derived, get } from 'svelte/store';
 import { isNetworkStoreObj, isNetworkObj, isBoolean, networkKey } from './stores.js';
 
 const lamdenNetworks = [
-    {name: 'Lamden Public Testnet', ip:'https://testnet.lamden.io', port: '443', online: false, lamden: true}
+    {name: 'Lamden Public Testnet', ip:'https://testnet.lamden.io', port: '443', online: false, lamden: true},
+    {name: 'Testing Testnet', ip:'https://testing.test.test', port: '8008', online: false, lamden: true}
 ]
 
 const defualtNetworksStore = {
@@ -21,7 +22,9 @@ function foundNetwork(networkStore, matchKey){
     return foundNetwork;
 }
 
-const createNetworksStore = (key, startValue) => {
+export const createNetworksStore = () => {
+    let key = "networks"
+    let startValue = defualtNetworksStore;
     //Get store value from localstorate
     const json = localStorage.getItem(key);
     //If there is a value then set it as the inital value
@@ -56,6 +59,14 @@ const createNetworksStore = (key, startValue) => {
         subscribe,
         set,
         update,
+        getValue: () => {
+            return get(NetworksStore);
+        },
+        getCurrentNetwork: () => {
+            let found = foundNetwork(get(NetworksStore), get(NetworksStore).current);
+            if (found) return found;
+            return $NetworksStore.lamden[0]
+        },
         //Make a network the current selected network
         //This sets the value of the derived "currentNetwork" store
         setCurrentNetwork: (networkInfo) => {
@@ -69,7 +80,10 @@ const createNetworksStore = (key, startValue) => {
                     //If the network is found then set this as the current network
                     //if (foundNetwork(networksStore, netKey)) throw new Error('found')
                     //throw new Error('not found')
-                    if (foundNetwork(networksStore, netKey)) networksStore.current = netKey;
+                    if (foundNetwork(networksStore, netKey)) {
+                        networksStore.current = netKey;
+                        chrome.runtime.sendMessage({type: 'currentNetworkChanged'})
+                    }
                     return networksStore;
                 })
             }
@@ -130,7 +144,7 @@ const createNetworksStore = (key, startValue) => {
 }
 
 //Networks Stores
-export const NetworksStore = createNetworksStore('networks', defualtNetworksStore);
+export const NetworksStore = createNetworksStore();
 
 //A Derrived Store of both user and lamden networks
 export const allNetworks = derived(

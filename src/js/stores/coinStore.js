@@ -2,11 +2,19 @@ import { writable, get, derived } from 'svelte/store';
 import { encryptObject, decryptObject } from '../../js/utils.js';
 import { isStringWithValue, copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
 
-const createCoinStore = () => {
+export const createCoinStore = () => {
     let startValue;
     //Create intial password as empty string
     const passwordStore = writable('');
     const lockedStore = writable(true);
+
+    lockedStore.subscribe(current => {
+        chrome.runtime.sendMessage({
+            type: 'storeLockStatusChanged', 
+            locked: current, 
+            pwd: get(passwordStore)
+        })
+    })
 
     //If password hasn't beeen set then set the CoinStore inital value to an empty array
     //because we don't have a password to decrypt it yet (Wallet is locked)
@@ -82,6 +90,9 @@ const createCoinStore = () => {
         setPwd,
         passwordStore,
         lockedStore,
+        getValue: () => {
+            return get(CoinStore)
+        },
         //Set the password to an empty string with will force the store
         //to return an empty array
         lockCoinStore: () =>{
@@ -185,5 +196,5 @@ export const balanceTotal = derived(CoinStore, ($CoinStore) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'coinStoreLocked') {
         sendResponse({locked: get(CoinStore.lockedStore)})
-	}
+    }
 })

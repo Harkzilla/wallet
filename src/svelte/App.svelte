@@ -24,6 +24,7 @@
 	$: pwdIsCorrect = CoinStore.validatePassword($password) && !$firstRun 
 
 	onMount(() => {
+		//CoinStore.setPwd('Testing0!2')
 		SettingsStore.calcStorage();
 		$firstRun ? SettingsStore.changePage({name: 'FirstRunMain'}) : null;
 	});
