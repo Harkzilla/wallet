@@ -49,9 +49,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		let installedStatus = {
 			installed: false,
 			setup: false,
-			locked: typeof locked === 'undefined' ? true : false,
+			locked: typeof locked === 'undefined' ? true : locked,
 			wallets: getWallets(),
-			currentNetwork: getCurrentNetwork()
+			currentNetwork: {name: '', ip: '', port: ''}
+		}
+		if (installedStatus.locked === false){
+			installedStatus.currentNetwork = getCurrentNetwork()
 		}
 		const json = localStorage.getItem("settings");
 		if (json) {
