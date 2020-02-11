@@ -2,14 +2,19 @@ import '../img/icon-128.png'
 import '../img/icon-34.png'
 
 import { TransactionBuilder } from './lamden/transactionBuilder.js'
-import { decryptStrHash } from './utils.js'
+import { decryptStrHash, decryptObject, encryptStrHash } from './utils.js'
 import { createCoinStore } from './stores/coinStore.js'
 import { createNetworksStore } from './stores/networksStore.js' 
+/*
+var hash;
+var lockPwd;
 
-let password;
-let locked;
-
+export function locked(){
+	return typeof lockPwd === 'undefined'
+}
+*/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+
 	//only try to preform these actions if the wallet is not locked
 	if (!locked) {
 		if (message.type === 'expand') {
@@ -33,6 +38,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				sendResponse({status: `Failed to create Tx: ${e}`})
 			}
 		}
+/*
+		if (message.type === 'decryptKey'){
+			sendResponse(decryptStrHash(lockPwd, message.data))
+		}
+		*/
 	}
 
 	if (message.type === 'storeLockStatusChanged'){
@@ -66,6 +76,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			sendResponse(installedStatus)
 		}
 	}
+/*
+	if (message.type === 'createPassword'){
+		hash = encryptStrHash(message.data, message.data)
+		lockPwd = message.data
+		sendResponse(true)
+	}
+
+	if (message.type === 'unlockWallet'){
+		let unlock = message.data === decryptStrHash(message.data, hash)
+		if (unlock) {
+			lockPwd = message.data
+			sendMsgToAllTabs({type: 'sendWalletInfo'})
+			sendLockStatusToApp();
+		} 
+		sendResponse(unlock)
+	}
+
+	if (message.type === 'lockWallet'){
+		lockPwd = undefined;
+		sendMsgToAllTabs({type: 'sendWalletInfo'})
+		sendLockStatusToApp();
+	}
+	*/
 });
 
 function getWallets(){
@@ -117,3 +150,7 @@ function sendMsgToAllTabs(message){
 		});
 	});
 }
+/*
+function sendLockStatusToApp(){
+	chrome.runtime.sendMessage({type: 'lockedChanged', data: locked()});
+}*/

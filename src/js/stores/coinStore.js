@@ -3,6 +3,7 @@ import { encryptObject, decryptObject } from '../../js/utils.js';
 import { isStringWithValue, copyItem, isCoinInfoObj, isNumber, isArray } from './stores.js';
 
 export const createCoinStore = () => {
+    let key = 'coins';
     let startValue;
     //Create intial password as empty string
     const passwordStore = writable('');
@@ -27,7 +28,12 @@ export const createCoinStore = () => {
         if ( !get(lockedStore) ){
             //Only accept object to be saved to the localstorage
             if (isArray(current)) {
-                localStorage.setItem('coins', JSON.stringify( encryptObject( get(passwordStore), current)));
+                let encryptedStorage = encryptObject( get(passwordStore), current)
+                localStorage.setItem('coins', JSON.stringify( encryptedStorage ));
+                chrome.storage.local.set({key: current}, function() {
+                    console.log('Value is set to');
+                    console.log(current);
+                  });
             }else{
                 //Get the CoinStore from local storage
                 const encryptedStorage = localStorage.getItem('coins');
@@ -46,9 +52,16 @@ export const createCoinStore = () => {
         //Do this only if the password being send in isn't an empty string
         if (currPwd !== ''){
 
+            chrome.storage.local.get([key], function(result) {
+                console.log('Value currently is');
+                console.log(result);
+            });
+
             CoinStore.update(curr => {
                 //Get the CoinStore from local storage
                 const encryptedStorage = localStorage.getItem('coins');
+
+                
 
                 if (encryptedStorage) {
                     //Try and decrypt it with the passwordStore Value
