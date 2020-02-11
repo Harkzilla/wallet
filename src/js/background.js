@@ -50,11 +50,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			installed: false,
 			setup: false,
 			locked: typeof locked === 'undefined' ? true : locked,
-			wallets: getWallets(),
+			wallets: [],
 			currentNetwork: {name: '', ip: '', port: ''}
+
 		}
 		if (installedStatus.locked === false){
 			installedStatus.currentNetwork = getCurrentNetwork()
+			installedStatus.wallets = getWallets()
 		}
 		const json = localStorage.getItem("settings");
 		if (json) {
@@ -69,9 +71,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function getWallets(){
-	if (locked) return [];
 	let CoinStore = createCoinStore()
-	CoinStore.setPwd(password);
+	try{
+		CoinStore.setPwd(password);
+	} catch (e) {
+		alert (e)
+		return [];
+	}
+
 	return CoinStore.getValue().map(coin => {
 		return {
 			name: coin.nickname !== '' ? coin.nickname : coin.name,
