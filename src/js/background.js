@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					txDetails.contractName, 
 					txDetails.methodName, 
 					txDetails.kwargs, 
-					50000
+					txDetails.stampLimit
 				)
 				sendResponse({status: 'Created Tx, sending...'})
 				sendTx(newTx, getWallet(txDetails.senderVk))

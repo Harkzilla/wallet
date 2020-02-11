@@ -7,10 +7,10 @@
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
-    "all-tests": "npm run test-workflows && npm run test-stores && npm run test-helpers",
+    "all-tests": "npm run test-all-workflows && npm run test-all-stores && npm run test-all-helpers && npm run test-all-lamden",
     "cypress-open": "./node_modules/.bin/cypress open",
     "test-all-workflows": "npm run test-firstrun-create && npm run test-firstrun-restore && npm run test-lockscreen && npm run test-add-wallet && npm run test-modify-wallet && npm run test-restore && npm run test-backup",
-      "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/firstrun-create-spec.js",
+      "test-firstrun-create": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/firstrun-create-spec.js --browser chrome --headless",
       "test-firstrun-restore": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/firstrun-restore-spec.js",
       "test-lockscreen": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/lockscreen-spec.js",
       "test-add-wallet": "./node_modules/.bin/cypress run --spec cypress/integration/workflows/add-wallet-spec.js",
@@ -30,7 +30,7 @@
     "test-all-helpers": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/*.js",
       "test-utils": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/utils-spec.js --headed --no-exit",
       "test-wallets": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/wallets-spec.js --headed --no-exit",
-    "test-all-lamden": "./node_modules/.bin/cypress run --spec cypress/integration/helpers/*.js",
+    "test-all-lamden": "./node_modules/.bin/cypress run --spec cypress/integration/lamden/*.js",
       "test-masternode-api": "./node_modules/.bin/cypress run --spec cypress/integration/lamden/masternode-api-spec.js --headed --no-exit",
       "test-transactionBuilder": "./node_modules/.bin/cypress run --spec cypress/integration/lamden/transactionBuilder-spec.js --headed --no-exit"
   },

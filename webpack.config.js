@@ -24,12 +24,6 @@ var options = {
   //optimization: {minimize: true},
   mode: env.NODE_ENV,
   entry: {
-    content: "./src/js/content.js"
-  },
-  chromeExtensionBoilerplate: {
-    notHotReload: ["content"]
-  },
-  entry: {
     popup: path.join(__dirname, "src", "js", "popup.js"),
     confirm: path.join(__dirname, "src", "js", "confirm.js"),
     app: path.join(__dirname, "src", "js", "app.js"),
